@@ -17,8 +17,9 @@ from    pygame.color        import *
 import  pymunk
 
 # - World communication
-from    modbus              import ServerModbus as Server
-from    modbus              import ClientModbus as Client
+from    wModbus             import ServerModbus
+from    wModbus             import ClientModbus
+from    wOpcua              import ServerOpcua
 
 #########################################
 # Logging
@@ -31,7 +32,8 @@ log.setLevel(logging.INFO)
 # PLC
 #########################################
 PLC_SERVER_IP   = "localhost"
-PLC_SERVER_PORT = 502
+#PLC_SERVER_PORT = 502
+PLC_SERVER_PORT = 4840
 
 PLC_TAG_LEVEL   = 0x1
 PLC_TAG_CONTACT = 0x2
@@ -435,26 +437,26 @@ def main():
     reactor.callInThread(runWorld)
 
     # Initialise motor, nozzle, level and contact components
-    motor['server'] = Server(MOTOR_SERVER_IP, port=MOTOR_SERVER_PORT)
+    motor['server'] = ServerModbus(MOTOR_SERVER_IP, port=MOTOR_SERVER_PORT)
     reactor.listenTCP(MOTOR_SERVER_PORT, motor['server'], interface = MOTOR_SERVER_IP,)
 
-    nozzle['server'] = Server(NOZZLE_SERVER_IP, port=NOZZLE_SERVER_PORT)
+    nozzle['server'] = ServerModbus(NOZZLE_SERVER_IP, port=NOZZLE_SERVER_PORT)
     reactor.listenTCP(NOZZLE_SERVER_PORT, nozzle['server'], interface = NOZZLE_SERVER_IP,)
 
-    level['server'] = Server(LEVEL_SERVER_IP, port=LEVEL_SERVER_PORT)
+    level['server'] = ServerModbus(LEVEL_SERVER_IP, port=LEVEL_SERVER_PORT)
     reactor.listenTCP(LEVEL_SERVER_PORT, level['server'], interface = LEVEL_SERVER_IP,)
 
-    contact['server'] = Server(CONTACT_SERVER_IP, port=CONTACT_SERVER_PORT)
+    contact['server'] = ServerModbus(CONTACT_SERVER_IP, port=CONTACT_SERVER_PORT)
     reactor.listenTCP(CONTACT_SERVER_PORT, contact['server'], interface = CONTACT_SERVER_IP)
 
     # Initialise plc component
-    plc['server'] = Server(PLC_SERVER_IP, port=PLC_SERVER_PORT)
+    plc['server'] = ServerOpcua(PLC_SERVER_IP, port=PLC_SERVER_PORT)
     reactor.listenTCP(PLC_SERVER_PORT, plc['server'], interface = PLC_SERVER_IP)
 
-    plc['motor']    = Client(MOTOR_SERVER_IP, port=MOTOR_SERVER_PORT)
-    plc['nozzle']   = Client(NOZZLE_SERVER_IP, port=NOZZLE_SERVER_PORT)
-    plc['level']    = Client(LEVEL_SERVER_IP, port=LEVEL_SERVER_PORT)
-    plc['contact']  = Client(CONTACT_SERVER_IP, port=CONTACT_SERVER_PORT)
+    plc['motor']    = ClientModbus(MOTOR_SERVER_IP, port=MOTOR_SERVER_PORT)
+    plc['nozzle']   = ClientModbus(NOZZLE_SERVER_IP, port=NOZZLE_SERVER_PORT)
+    plc['level']    = ClientModbus(LEVEL_SERVER_IP, port=LEVEL_SERVER_PORT)
+    plc['contact']  = ClientModbus(CONTACT_SERVER_IP, port=CONTACT_SERVER_PORT)
 
     # Run World
     reactor.run()

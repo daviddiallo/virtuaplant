@@ -8,8 +8,10 @@ import  sys
 from gi.repository  import GLib, Gtk, GObject
 
 # - HMI communication
-from modbus         import ClientModbus as Client
-from modbus	    import ConnectionException 
+#from wModbus        import ClientModbus as Client
+#from wModbus	     import ConnectionException 
+from wOpcua         import ClientOpcua
+from wOpcua         import ConnectionException 
 
 # - World environement
 from world          import *
@@ -35,7 +37,8 @@ class HMIWindow(Gtk.Window):
 
         self.set_border_width(HMI_SCREEN_WIDTH)
         
-        self.client = Client(address, port=port)
+        #self.client = ClientModbus(address, port=port)
+        self.client = ClientOpcua(address, port=port)
 
         elementIndex = 0
 
